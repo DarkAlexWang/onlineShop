@@ -1,4 +1,4 @@
-##Spring and Hibernate based Shopping and Ordering system
+#Spring and Hibernate based Shopping and Ordering system
 
 - Built a web application based on Spring MVC to support item search and listing (dependency injection, inversion of control, REST API etc.)
 - Implement security workflow via in-memory and JDBC authentication provided by Spring Security
