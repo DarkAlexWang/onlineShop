@@ -11,6 +11,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
+@PropertySource("classpath:application.properties")
 @EnableWebMvc
 public class ApplicationConfig {
 	@Bean(name = "sessionFactory")
@@ -49,4 +50,45 @@ public class ApplicationConfig {
 		hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
 		return hibernateProperties;
 	}
+	
+	@Autowired
+    private Environment env;
+
+    @Value("${app.name:onlineShop}")
+    private String appName;
+
+    @Value("${spark.home}")
+    private String sparkHome;
+
+    @Value("${master.uri:local}")
+    private String masterUri;
+
+    @Bean
+    public SparkConf sparkConf() {
+        SparkConf sparkConf = new SparkConf()
+                .setAppName(appName)
+                .setSparkHome(sparkHome)
+                .setMaster(masterUri);
+
+        return sparkConf;
+    }
+
+    @Bean
+    public JavaSparkContext javaSparkContext() {
+        return new JavaSparkContext(sparkConf());
+    }
+
+    @Bean
+    public SparkSession sparkSession() {
+        return SparkSession
+                .builder()
+                .sparkContext(javaSparkContext().sc())
+                .appName("onlineShop product description word count")
+                .getOrCreate();
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 }
